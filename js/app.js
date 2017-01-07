@@ -1,7 +1,5 @@
 // Enemies our player must avoid
 var Enemy = function(startX, startY, bugSpeed) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -19,7 +17,7 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-     if ( this.x < 606) {
+    if ( this.x < 606) {
         this.x += this.speed * dt;
     } else {
       //when bug hits end of screen, start at common point
@@ -32,35 +30,41 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
+// The Player class!
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-    // Variables applied to each of our instances go here
-
-    // The image/sprite for our player, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/char-boy.png';
 
     //default starting location of the player
     this.x = 202;
     this.y = 404;
+
+    //victory condition
+    this.victory = false;
+
+    //character sprite variable will change with each success to choose a new sprite
+    this.level = 1;
+
+    // The image/sprite for our player, this uses
+    // a helper we've provided to easily load images
+    this.sprite = 'images/char1.png';
 };
 
 // Handle the input to move the player around
 Player.prototype.handleInput = function(direction) {
-    if (direction === 'right') {
-      this.x += 101;
-    } else if (direction === 'left') {
-      this.x -= 101;
-    } else if (direction === 'down') {
-      this.y += 85;
-    } else if (direction === 'up') {
-      this.y -= 85;
-      //reset the player position when the water is reached
-      if (this.y <= 50) {
-        this.reset();
-      }
+    if (direction === 'right' && this.x !== edges.right) {
+        this.x += 101;
+    } else if (direction === 'left' && this.x !== edges.left) {
+        this.x -= 101;
+    } else if (direction === 'down' && this.y !== edges.bottom) {
+        this.y += 85;
+    } else if (direction === 'up' && this.y !== edges.top) {
+        this.y -= 85;
+        //reset the player position when the water is reached
+        if (this.y <= 50) {
+            this.victory = true;
+            this.reset();
+        }
     }
 
 };
@@ -69,11 +73,33 @@ Player.prototype.handleInput = function(direction) {
 Player.prototype.reset = function() {
     this.x = 202;
     this.y = 404;
-}
 
-// This will be the collision detection function
+    //When a victory is acheived, the character changes
+    if (this.level <= 5 && this.level >= 0) {
+        if (this.victory == true) {
+            this.level += 1;
+            this.victory = false;
+        } else if (this.level != 0) {
+            //When the player gets hit, the character reverts back
+            this.level -= 1;
+        }
+    }
+    //change the sprite based on the character level
+    this.sprite = 'images/char' + this.level + '.png';
+};
+
+// This is the collision detection function
 Player.prototype.update = function() {
-    // This will be the
+    var self = this;
+
+    //iterate through the array of enemies and determine whether the enemy
+    //and player sprite intersect
+    allEnemies.forEach(function(enemy) {
+        if (Math.abs(enemy.x - self.x) < 50 && Math.abs(enemy.y - self.y) < 50) {
+            self.victory = false;
+            self.reset();
+        }
+    });
 };
 
 // Draw the player on the screen, required method for game
@@ -100,6 +126,14 @@ allEnemies.push(enemy5);
 
 // Place the player object in a variable called player
 var player = new Player();
+
+//The gameboard needs edges that the player cannot move past
+var edges = {
+  left: 0,
+  right: 404,
+  top: 25,
+  bottom: 404
+};
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
