@@ -61,14 +61,17 @@ Player.prototype.handleInput = function(direction) {
     } else if (direction === 'down' && this.y !== edges.bottom) {
         this.y += 85;
     } else if (direction === 'up' && this.y !== edges.top) {
-        this.y -= 85;
-        //reset the player position when the water is reached
-        if (this.y <= 50) {
-            this.victory = true;
-            this.reset();
+        /*I want to render the sprite in the water for a moment
+         * but it will clip off the canvas if they are moved a full step,
+         * so this is a check to see if they have reached the final road
+         * time before the water
+         */
+        if (player.y <= 85){
+            this.y -= 64;
+        } else {
+            this.y -= 85;
         }
     }
-
 };
 
 //Reset the position of the player
@@ -78,10 +81,10 @@ Player.prototype.reset = function() {
 
     //When a victory is acheived, the character changes
     if (this.level <= 5 && this.level >= 0) {
-        if (this.victory == true) {
+        if (this.victory === true) {
             this.level += 1;
             this.victory = false;
-        } else if (this.level != 0) {
+        } else if (this.level !== 0) {
             //When the player gets hit, the character reverts back
             this.level -= 1;
         }
@@ -121,6 +124,8 @@ Player.prototype.update = function() {
     allEnemies.forEach(function(enemy) {
         if (Math.abs(enemy.x - self.x) < 50 && Math.abs(enemy.y - self.y) < 50) {
             self.victory = false;
+            //render the player so that it doesn't look like the reset was a glitch
+            self.render();
             self.reset();
         }
     });
@@ -129,6 +134,11 @@ Player.prototype.update = function() {
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    //reset the player position when the water is reached
+    if (this.y <= 50) {
+        this.victory = true;
+        this.reset();
+    }
 };
 
 // Gems our player is awarded with when they win!
@@ -178,7 +188,7 @@ var player = new Player();
 var edges = {
   left: 0,
   right: 404,
-  top: 25,
+  top: 100,
   bottom: 404
 };
 
