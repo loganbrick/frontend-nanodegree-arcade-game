@@ -23,6 +23,8 @@ Enemy.prototype.update = function(dt) {
       //when bug hits end of screen, start at common point
         this.x = -101;
     }
+    //Collision is dealt with in the Player.prototype.update function
+    //and is thus left out of this function to avoid redundancy
 };
 
 // Draw the enemy on the screen, required method for game
