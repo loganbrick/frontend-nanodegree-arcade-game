@@ -86,6 +86,28 @@ Player.prototype.reset = function() {
     }
     //change the sprite based on the character level
     this.sprite = 'images/char' + this.level + '.png';
+
+    if (this.level == 6){
+        //disable the allEnemies array to shower the winner in gems!
+        allEnemies = [new Enemy(-101, 55, 0)];
+
+        var gem1 = new Gem(0, 202, 0);
+        var gem2 = new Gem(0, 303, 0);
+        var gem3 = new Gem(101, 404, 0);
+        var gem4 = new Gem(202, 303, 0);
+        var gem5 = new Gem(303, 404, 0);
+        var gem6 = new Gem(404, 303, 0);
+        var gem7 = new Gem(404, 202, 0);
+
+        //Push the gems to the array and let them display!
+        allGems.push(gem1);
+        allGems.push(gem2);
+        allGems.push(gem3);
+        allGems.push(gem4);
+        allGems.push(gem5);
+        allGems.push(gem6);
+        allGems.push(gem7);
+    }
 };
 
 // This is the collision detection function
@@ -107,6 +129,24 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+// Gems our player is awarded with when they win!
+var Gem = function(startX, startY, gemSpeed) {
+
+    // The image/sprite for our gems, this uses
+    // a helper we've provided to easily load images
+    this.sprite = 'images/Gem_O.png';
+
+    //set default start location of enemy
+    this.x = startX;
+    this.y = startY;
+    this.speed = gemSpeed;
+};
+
+Gem.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+
 // Now instantiate your objects.
 // 3 Enemies with different locations
 var enemy1 = new Enemy(-101, 55, 60);
@@ -122,6 +162,9 @@ allEnemies.push(enemy2);
 allEnemies.push(enemy3);
 allEnemies.push(enemy4);
 allEnemies.push(enemy5);
+
+//create the Gem array for the victory condition
+var allGems = [];
 
 
 // Place the player object in a variable called player
