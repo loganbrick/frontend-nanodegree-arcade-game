@@ -142,6 +142,8 @@ var Gem = function(startX, startY, gemSpeed) {
     this.speed = gemSpeed;
 };
 
+
+// Draw the gems on the screen, required method for game
 Gem.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
